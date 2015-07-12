@@ -7,12 +7,13 @@ lazy val root = (project in file(".")).enablePlugins(PlayScala)
 scalaVersion := "2.11.6"
 
 libraryDependencies ++= Seq(
-  jdbc,
   cache,
   ws,
   "com.rometools" % "rome" % "1.5.1",
   "de.jetwick" % "snacktory" % "1.2-SNAPSHOT",
   "com.esotericsoftware" % "kryo" % "3.0.2",
+  "net.codingwell" %% "scala-guice" % "4.0.0",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.2.play24",
   specs2 % Test
 )
 
