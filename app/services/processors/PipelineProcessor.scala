@@ -2,13 +2,17 @@ package services.processors
 
 import com.rometools.rome.feed.synd.SyndFeed
 
+import scala.concurrent.{ExecutionContext, Future}
+
 /**
  * Processor combines all underlying processors in single processing pipeline
  */
-class PipelineProcessor(pipeline: Seq[Processor]) extends Processor {
+class PipelineProcessor(pipeline: AsyncProcessor*) extends AsyncProcessor {
 
-  override def process(feed: SyndFeed): SyndFeed = {
-    pipeline.foldLeft(feed) { case (f, proc) => proc.process(f) }
+  override def processAsync(feed: SyndFeed)(implicit ec: ExecutionContext): Future[SyndFeed] = {
+    pipeline.foldLeft(Future.successful(feed)) { case (fut, proc) =>
+      fut.flatMap(proc.processAsync)(ec)
+    }
   }
 
 }

@@ -1,11 +1,12 @@
 package modules
 
 import com.esotericsoftware.kryo.Kryo
-import com.google.inject.{Provider, AbstractModule}
+import com.google.inject.{Singleton, Provider, AbstractModule}
 import net.codingwell.scalaguice.ScalaModule
 
 object KryoModule {
 
+  @Singleton
   class KryoProvider extends Provider[Kryo] {
     def get() = new Kryo()
   }
