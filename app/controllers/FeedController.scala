@@ -24,10 +24,10 @@ class FeedController @Inject()(kryoProvider: KryoProvider, client: WSClient) ext
       client
     )
 
-    val pipeline = new PipelineProcessor()
+    val pipeline = Processors.combine()
 
     val output = new SyndFeedOutput()
-    reader.read(url).flatMap(pipeline.processAsync).map(feed => {
+    reader.read(url).flatMap(pipeline).map(feed => {
       Ok(output.outputString(feed)).withHeaders(
         CONTENT_TYPE -> "text/xml; charset=UTF-8"
       )

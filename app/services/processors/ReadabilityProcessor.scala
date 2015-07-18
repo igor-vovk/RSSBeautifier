@@ -1,24 +1,22 @@
 package services.processors
 
 import com.google.inject.Inject
-import com.rometools.rome.feed.synd.{SyndContentImpl, SyndEntry}
+import com.rometools.rome.feed.synd.{SyndContentImpl, SyndEntry, SyndFeed}
 import de.jetwick.snacktory.ArticleTextExtractor
 import play.api.http.MimeTypes
 import play.api.libs.ws.WSClient
 
 import scala.collection.JavaConverters._
-import scala.concurrent.{ExecutionContext, Future}
-
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 /**
  * Processor fetches original entry content and passes it through snacktory readability-like service
  */
-class ReadabilityProcessor @Inject() (extractor: ArticleTextExtractor, ws: WSClient) extends AsyncEntriesProcessor {
+class ReadabilityProcessor @Inject() (extractor: ArticleTextExtractor, ws: WSClient) extends AsyncProcessor {
 
-  override def processEntries(entries: Seq[SyndEntry])(implicit ec: ExecutionContext): Seq[Future[SyndEntry]] = {
-    entries.map(processEntry)
-  }
+  override def apply(v1: SyndFeed) = Processors.entryMapperA(processEntry)(v1)
 
-  def processEntry(entry: SyndEntry)(implicit ec: ExecutionContext): Future[SyndEntry] = {
+  def processEntry(entry: SyndEntry): Future[SyndEntry] = {
     ws.url(entry.getUri).get().map(resp => {
       val result = extractor.extractContent(resp.body)
 
@@ -38,10 +36,9 @@ class ReadabilityProcessor @Inject() (extractor: ArticleTextExtractor, ws: WSCli
       description.setValue(b.toString())
 
       entry.setDescription(description)
+
+      entry
     })
-
-
-    Future.successful(entry)
   }
 
 }
