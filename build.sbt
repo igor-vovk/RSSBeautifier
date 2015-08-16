@@ -13,7 +13,7 @@ libraryDependencies ++= Seq(
   "de.jetwick" % "snacktory" % "1.2-SNAPSHOT",
   "com.esotericsoftware" % "kryo" % "3.0.2",
   "net.codingwell" %% "scala-guice" % "4.0.0",
-  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.2.play24",
+  "org.reactivemongo" %% "play2-reactivemongo" % "0.11.6.play24",
   specs2 % Test
 )
 

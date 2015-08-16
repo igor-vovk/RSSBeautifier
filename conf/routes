@@ -3,9 +3,15 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index
+GET         /                              controllers.Application.index
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                  controllers.Assets.versioned(path="/public", file: Asset)
 
-GET     /feed                       controllers.FeedController.beautify
+POST        /feed/create                   controllers.FeedController.createFeed
+
+GET         /feed/:id                      controllers.FeedController.feed(id)
+
+GET         /feed/:id/configuration        controllers.FeedController.feedConfig(id)
+
+POST        /feed/:id/configuration        controllers.FeedController.updateFeedConfig(id, acctok)
