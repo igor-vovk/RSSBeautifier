@@ -12,6 +12,7 @@ import play.api.mvc._
 import reactivemongo.bson.BSONObjectID
 import repositories.{Feed, FeedConfig, FeedRepository}
 import services.cache.{FileStore, FileStoreConfig, KryoSerializer}
+import services.processors.ProcessorResolver
 import services.processors.Processors._
 import services.{FeedReader, Instantiator}
 
@@ -20,12 +21,12 @@ import scala.concurrent.Future
 object FeedController {
 
 
-
 }
 
 class FeedController @Inject()(kryoProvider: KryoProvider,
                                ws: WSClient,
-                               feedRepo: FeedRepository) extends Controller {
+                               feedRepo: FeedRepository,
+                               presolver: ProcessorResolver) extends Controller {
 
   import repositories.FeedRepositoryJsonFormats._
 
@@ -43,7 +44,7 @@ class FeedController @Inject()(kryoProvider: KryoProvider,
   def feed(feedId: String) = Action.async {
     feedRepo.find(BSONObjectID(feedId)).flatMap {
       case Some(f) =>
-        val processFeed = pipe()
+        val processFeed = pipe(f.config.processors.map(presolver(_)): _*)
 
         Future.sequence(f.config.sources.map(reader.read))
           .map(combine(_))
@@ -98,7 +99,5 @@ class FeedController @Inject()(kryoProvider: KryoProvider,
       }))
       .flatMap(_.merge)
   }
-
-
 
 }
