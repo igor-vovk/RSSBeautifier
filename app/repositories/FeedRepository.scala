@@ -12,7 +12,9 @@ import scala.concurrent.Future
 
 case class ProcessorConfig(`type`: String, config: JsValue)
 
-case class FeedConfig(sources: Seq[String], processors: Seq[ProcessorConfig])
+case class FeedConfig(sources: Seq[String], processors: Seq[ProcessorConfig]) {
+  require(sources.size <= 32, "Too many sources")
+}
 
 case class Feed(id: BSONObjectID,
                 config: FeedConfig = FeedConfig(Seq.empty, Seq.empty),
